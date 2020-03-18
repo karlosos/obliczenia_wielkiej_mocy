@@ -12,3 +12,6 @@ g++ -pthread example.cpp && ./a.out
 
 How to do multithreading in C++: 
 https://www.geeksforgeeks.org/multithreading-in-cpp/
+
+Multiplication of matrix using threads:
+https://www.geeksforgeeks.org/multiplication-of-matrix-using-threads/

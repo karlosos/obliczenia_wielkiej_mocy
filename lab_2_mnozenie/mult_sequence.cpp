@@ -1,12 +1,16 @@
 #include <iostream>
 #include <array>
 
-int main () {
-    std::cout << "Hello world" << std::endl;
-    const int matrixSize = 2;
-    std::array<std::array<int, matrixSize>, matrixSize> leftMatrix; 
-    std::array<std::array<int, matrixSize>, matrixSize> rightMatrix; 
+const int matrixSize = 16;
+std::array<std::array<int, matrixSize>, matrixSize> leftMatrix; 
+std::array<std::array<int, matrixSize>, matrixSize> rightMatrix; 
 
+const int outputRowCount = matrixSize;
+const int outputColCount = matrixSize;
+const int inputCommonSize = matrixSize;
+std::array<std::array<int, outputRowCount>, outputColCount> outputMatrix;
+
+int main () {
     // wypelnienie macierzy danymi
     int a = 0;
     for (int i=0; i<matrixSize; i++) {
@@ -34,10 +38,6 @@ int main () {
     }
 
     // Mnozenie macierzy
-    const int outputRowCount = matrixSize;
-    const int outputColCount = matrixSize;
-    const int inputCommonSize = matrixSize;
-    std::array<std::array<int, outputRowCount>, outputColCount> outputMatrix;
     for (int i=0; i<outputRowCount; i++) {
         for (int j=0; j<outputColCount; j++) {
             int sum = 0;
