@@ -1,3 +1,4 @@
+Karol Dzialowski 2B 39259
 λ cat /proc/cpuinfo
 processor	: 0
 vendor_id	: GenuineIntel

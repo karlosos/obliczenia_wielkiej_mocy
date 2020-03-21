@@ -1,3 +1,4 @@
+// Karol Dzialowski 2B 39259
 #include <iostream>
 #include <array>
 #include <thread>
