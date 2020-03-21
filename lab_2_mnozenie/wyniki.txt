@@ -1,4 +1,3 @@
-~/Dev/obliczenia_wielkiej_mocy/lab_2_mnozenie master× 11s                                                                      ⬢ 8.10.0
 λ cat /proc/cpuinfo
 processor	: 0
 vendor_id	: GenuineIntel
@@ -10,10 +9,17 @@ microcode	: 0x21
 cpu MHz		: 1357.704
 cache size	: 3072 KB
 
-Wyniki dla rozmiaru 1000x1000 w mikrosekundach:
+Wyniki dla rozmiaru 1000x1000 w milisekundach:
 
-Sekwencyjnie: 2249995
-Sekwencyjnie z transponowaniem: 430103
-Sekwencyjnie z transponowaniem (samo mnozenie): 418605
+λ ./a.out                         
+Sequence: 		        8004
+Sequence transposed: 	444
+2 Threads: 		        1249
+2 Threads transposed: 	403
+3 Threads: 		        1365
+3 Threads transposed: 	280
+4 Threads: 		        1095
+4 Threads transposed: 	213
 
-Współbieżnie: 1039690
+Kompilowane przy użyciu komendy: `g++ -pthreads mult_thread.cpp -O3`
+Wersja g++ 4.7.0

@@ -3,23 +3,24 @@
 #include <thread>
 #include <chrono> 
 
-const int threadsCount = 4;
+// These need to be set 
+bool isThreading;
+bool isTranspose;
+int threadsCount;
 
 const int matrixSize = 1000;
 std::array<std::array<int, matrixSize>, matrixSize> leftMatrix; 
 std::array<std::array<int, matrixSize>, matrixSize> rightMatrix; 
+std::array<std::array<int, matrixSize>, matrixSize> rightMatrixTransposed; 
 
-const int outputRowCount = matrixSize;
-const int outputColCount = matrixSize;
 const int inputCommonSize = matrixSize;
-std::array<std::array<int, outputRowCount>, outputColCount> outputMatrix;
+std::array<std::array<int, matrixSize>, matrixSize> outputMatrix;
 
-void mult(int startIndexRow, int endIndexRow, int colCount) {
-    std::cout << "I am in thread" << std::endl;
+void mult(int startIndexRow, int endIndexRow) {
     for (int i=startIndexRow; i<endIndexRow; i++) {
-        for (int j=0; j<colCount; j++) {
+        for (int j=0; j<matrixSize; j++) {
             int sum = 0;
-            for (int k=0; k<colCount; k++) {
+            for (int k=0; k<matrixSize; k++) {
                 sum += leftMatrix[i][k] * rightMatrix[k][j];
             }
             outputMatrix[i][j] = sum;
@@ -27,65 +28,170 @@ void mult(int startIndexRow, int endIndexRow, int colCount) {
     }
 }
 
-int main () {
-    // wypelnienie macierzy danymi
+void mult_transposed(int startIndexRow, int endIndexRow) {
+    for (int i=startIndexRow; i<endIndexRow; i++) {
+        for (int j=0; j<matrixSize; j++) {
+            int sum = 0;
+            for (int k=0; k<matrixSize; k++) {
+                sum += leftMatrix[i][k] * rightMatrixTransposed[j][k];
+            }
+            outputMatrix[i][j] = sum;
+        }
+    }
+}
+
+void mult_sequence() {
+    for (int i=0; i<matrixSize; i++) {
+        for (int j=0; j<matrixSize; j++) {
+            int sum = 0;
+            for (int k=0; k<inputCommonSize; k++) {
+                if (!isTranspose)
+                    sum += leftMatrix[i][k] * rightMatrix[k][j];
+                else
+                    sum += leftMatrix[i][k] * rightMatrix[j][k];
+            }
+            outputMatrix[i][j] = sum;
+        }
+    }
+}
+
+void clean_matrices() {
     int a = 0;
     for (int i=0; i<matrixSize; i++) {
         for (int j=0; j<matrixSize; j++) {
             leftMatrix[i][j] = a;
             rightMatrix[i][j] = a++;
+            rightMatrixTransposed[i][0] = 0;
+            outputMatrix[i][j] = 0;
         } 
     }
+}
 
-    // Wyswietlenie macierzy
-    // std::cout << "Left matrix:" << std::endl;
-    // for (const auto& row: leftMatrix) {
-    //     for (const auto& el: row) {
-    //        std::cout << el << "\t";
-    //     }
-    //     std::cout << std::endl;
-    // }
+void transpose_right_matrix() {
+    for (int i=0; i<matrixSize; i++) {
+        for (int j=0; j<matrixSize; j++) {
+            rightMatrixTransposed[i][j] = rightMatrix[j][i];
+        } 
+    }
+}
 
-    // std::cout << "Right matrix:" << std::endl;
-    // for (const auto& row: rightMatrix) {
-    //     for (const auto& el: row) {
-    //        std::cout << el << "\t";
-    //     }
-    //     std::cout << std::endl;
-    // }
-
-    auto start = std::chrono::high_resolution_clock::now(); 
-
-    // Mnozenie macierzy
-    int rowsPerThread = outputRowCount/threadsCount;
-    std::thread multtiplicationThreads[threadsCount];
-
-    for (int i=0; i<threadsCount; i++) {
-        int startIndexRow = i*rowsPerThread;
-        int endIndexRow = startIndexRow + rowsPerThread;
-        if (i == threadsCount-1) {
-            endIndexRow = outputColCount;
+void print_input_matrices() {
+    std::cout << "Left matrix:" << std::endl;
+    for (const auto& row: leftMatrix) {
+        for (const auto& el: row) {
+           std::cout << el << "\t";
         }
-
-        int colCount = outputColCount;
-        multtiplicationThreads[i] = std::thread(mult, startIndexRow, endIndexRow, colCount);
+        std::cout << std::endl;
     }
 
-    for (int i=0; i<threadsCount; i++) {
-        multtiplicationThreads[i].join();
+    std::cout << "Right matrix:" << std::endl;
+    for (const auto& row: rightMatrix) {
+        for (const auto& el: row) {
+           std::cout << el << "\t";
+        }
+        std::cout << std::endl;
+    }
+}
+
+void print_output_matrices() {
+    std::cout << "Output matrix" << std::endl;
+    for (const auto& row: outputMatrix) {
+        for (const auto& el: row) {
+           std::cout << el << "\t";
+        }
+        std::cout << std::endl;
+    }
+}
+
+void experiment() {
+    // wypelnienie macierzy danymi
+    clean_matrices();
+
+    // print_input_matrices();
+
+    auto start = std::chrono::high_resolution_clock::now(); 
+    if (isTranspose) {
+        transpose_right_matrix();
+    }
+
+    if (isThreading) {
+        int rowsPerThread = matrixSize/threadsCount;
+        std::thread multtiplicationThreads[threadsCount];
+
+        for (int i=0; i<threadsCount; i++) {
+            int startIndexRow = i*rowsPerThread;
+            int endIndexRow = startIndexRow + rowsPerThread;
+            if (i == threadsCount-1) {
+                endIndexRow = matrixSize;
+            }
+            if (!isTranspose) {
+                multtiplicationThreads[i] = std::thread(mult, startIndexRow, endIndexRow);
+            }
+            else {
+                multtiplicationThreads[i] = std::thread(mult_transposed, startIndexRow, endIndexRow);
+            }
+            
+        }
+
+        for (int i=0; i<threadsCount; i++) {
+            multtiplicationThreads[i].join();
+        }
+    } else {
+        mult_sequence();
     }
 
     auto stop = std::chrono::high_resolution_clock::now(); 
-    auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start); 
-    std::cout << "Time in ms: " << duration.count() << std::endl; 
+    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(stop - start); 
+    std::cout << duration.count() << std::endl; 
+    
+    // print_output_matrices();
+}
 
-    // Wyswietlenie macierzy wynikowej
-    // std::cout << "Output matrix" << std::endl;
-    // for (const auto& row: outputMatrix) {
-    //     for (const auto& el: row) {
-    //        std::cout << el << "\t";
-    //     }
-    //     std::cout << std::endl;
-    // }
+int main () {
+    std::cout << "Sequence: \t\t"; 
+    isTranspose = false;
+    isThreading = false;
+    experiment();
+
+    std::cout << "Sequence transposed: \t";
+    isTranspose = true;
+    isThreading = false;
+    experiment();
+
+    std::cout << "2 Threads: \t\t";
+    isTranspose = false;
+    isThreading = true;
+    threadsCount = 2;
+    experiment();
+
+    std::cout << "2 Threads transposed: \t";
+    isTranspose = true;
+    isThreading = true;
+    threadsCount = 2;
+    experiment();
+
+    std::cout << "3 Threads: \t\t";
+    isTranspose = false;
+    isThreading = true;
+    threadsCount = 3;
+    experiment();
+
+    std::cout << "3 Threads transposed: \t";
+    isTranspose = true;
+    isThreading = true;
+    threadsCount = 3;
+    experiment();
+
+    std::cout << "4 Threads: \t\t";
+    isTranspose = false;
+    isThreading = true;
+    threadsCount = 4;
+    experiment();
+
+    std::cout << "4 Threads transposed: \t";
+    isTranspose = true;
+    isThreading = true;
+    threadsCount = 4;
+    experiment();
     return 0;
 }
