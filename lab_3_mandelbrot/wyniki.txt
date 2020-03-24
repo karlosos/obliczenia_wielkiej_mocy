@@ -1,0 +1,48 @@
+Karol Dzialowski 2B 39259
+Lab 2 mandelbrot
+
+*** 
+
+λ cat /proc/cpuinfo
+processor	: 0
+vendor_id	: GenuineIntel
+cpu family	: 6
+model		: 58
+model name	: Intel(R) Core(TM) i5-3230M CPU @ 2.60GHz
+stepping	: 9
+microcode	: 0x21
+cpu MHz		: 1357.704
+cache size	: 3072 KB
+
+*** 
+
+Times in milliseconds:
+
+Image size 800
+Threads: 1	 	 64
+Threads: 2	 	 35
+Threads: 3	 	 57
+Threads: 4	 	 34
+
+Image size 1600
+Threads: 1	 	 240
+Threads: 2	 	 130
+Threads: 3	 	 219
+Threads: 4	 	 119
+
+Image size 3200
+Threads: 1	 	 949
+Threads: 2	 	 500
+Threads: 3	 	 834
+Threads: 4	 	 489
+
+Image size 6400
+Threads: 1	 	 3867
+Threads: 2	 	 2095
+Threads: 3	 	 3417
+Threads: 4	 	 1978
+
+*** 
+
+Kompilowane przy użyciu komendy: `g++ -pthreads mandelbrot.cpp -O3`
+Wersja g++ 4.7.0
