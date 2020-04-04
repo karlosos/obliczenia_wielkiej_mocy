@@ -1,7 +1,8 @@
+// Karol Dzialowski 39259 2B
 #include <thread>
 #include <iostream>
 #include <math.h>
-#include <algorithm> 
+#include <algorithm>
 
 const int imageWidth = 601;
 unsigned char image[imageWidth][imageWidth][3];
@@ -25,15 +26,21 @@ int isprime(int n)
     return n > 2;
 }
 
-void drawSpiral(std::pair<int, int> x_bounds, std::pair<int, int> y_bounds, int color) {
-    for (int i=x_bounds.first; i<x_bounds.second; i++) {
-        for (int j=y_bounds.first; j<y_bounds.second; j++) {
+void drawSpiral(std::pair<int, int> x_bounds, std::pair<int, int> y_bounds, int color)
+{
+    for (int i = x_bounds.first; i < x_bounds.second; i++)
+    {
+        for (int j = y_bounds.first; j < y_bounds.second; j++)
+        {
             bool isCelPrime = isprime(ulam_get_map(i, j, imageWidth));
-            if (isCelPrime) {
+            if (isCelPrime)
+            {
                 image[i][j][0] = 255;
                 image[i][j][1] = 255;
                 image[i][j][2] = 255;
-            } else {
+            }
+            else
+            {
                 image[i][j][0] = color;
                 image[i][j][1] = color;
                 image[i][j][2] = color;
@@ -51,20 +58,21 @@ int main()
     fprintf(fp, "P6\n %s\n %d\n %d\n %d\n", comment, imageWidth, imageWidth, 255);
 
     std::thread spiral_quarter[4];
-    auto upper_bound = std::make_pair(0, imageWidth/2);
-    auto lower_bound = std::make_pair(imageWidth/2, imageWidth);
-    auto left_bound = std::make_pair(0, imageWidth/2);
-    auto right_bound = std::make_pair(imageWidth/2, imageWidth);
-    spiral_quarter[0] = std::thread(drawSpiral, upper_bound, left_bound, 0); 
-    spiral_quarter[1] = std::thread(drawSpiral, upper_bound, right_bound, 50); 
-    spiral_quarter[2] = std::thread(drawSpiral, lower_bound, left_bound, 100); 
-    spiral_quarter[3] = std::thread(drawSpiral, lower_bound, right_bound, 200); 
+    auto upper_bound = std::make_pair(0, imageWidth / 2);
+    auto lower_bound = std::make_pair(imageWidth / 2, imageWidth);
+    auto left_bound = std::make_pair(0, imageWidth / 2);
+    auto right_bound = std::make_pair(imageWidth / 2, imageWidth);
+
+    spiral_quarter[0] = std::thread([&] { drawSpiral(upper_bound, left_bound, 0); });
+    spiral_quarter[1] = std::thread([&] { drawSpiral(upper_bound, right_bound, 0); });
+    spiral_quarter[2] = std::thread([&] { drawSpiral(lower_bound, left_bound, 0); });
+    spiral_quarter[3] = std::thread([&] { drawSpiral(lower_bound, right_bound, 0); });
 
     spiral_quarter[0].join();
     spiral_quarter[1].join();
     spiral_quarter[2].join();
     spiral_quarter[3].join();
-    
+
     fwrite(image, 1, 3 * imageWidth * imageWidth, fp);
     fclose(fp);
     return 0;
