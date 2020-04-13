@@ -1,0 +1,41 @@
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+      x     x                 x     x        x              x
+x  x  x  x  xxxxxxx  xxxxxxx  xxxx  x  xxxx  x  xxxxxxxxxx  x
+x  x     x           x        x     x  x  x  x  x           x
+x  xxxxxxxxxxxxxxxxxxx  xxxxxxx  xxxx  x  x  x  xxxxxxxxxx  x
+x  x     x           x           x  x  x     x     x        x
+x  xxxx  x  xxxxxxxxxxxxxxxx  xxxx  x  xxxx  xxxx  xxxxxxx  x
+x        x  x     x     x     x     x  x     x  x     x  x  x
+xxxx  xxxx  xxxx  x  x  x  xxxx  x  xxxx  xxxx  xxxx  x  x  x
+x  x     x           x     x     x        x     x     x     x
+x  xxxx  xxxxxxxxxxxxxxxxxxx  xxxxxxxxxxxxx  xxxx  xxxxxxxxxx
+x     x     x     x        x  x        x        x  x        x
+xxxx  xxxx  x  x  x  xxxx  x  x  xxxx  xxxxxxx  x  xxxx  xxxx
+x     x     x  x     x        x     x  x     x        x     x
+x  xxxx  xxxx  xxxxxxx  x  xxxxxxx  x  x  x  xxxxxxx  xxxx  x
+x        x     x     x  x        x  x     x           x     x
+xxxx  xxxx  xxxx  x  x  xxxxxxxxxx  xxxxxxx  xxxxxxxxxx  xxxx
+x     x     x     x  x     x        x                    x  x
+x  xxxx  xxxx  xxxx  xxxx  xxxx  xxxx  xxxxxxxxxxxxx  xxxx  x
+x        x     x     x     x     x     x     x     x        x
+xxxx  xxxxxxxxxx  x  x  xxxx  xxxx  xxxxxxx  x  xxxxxxxxxx  x
+x     x           x  x        x  x  x        x              x
+x  xxxx  xxxxxxxxxx  x  xxxxxxx  x  x  xxxxxxxxxxxxx  xxxxxxx
+x  x     x  x        x  x        x     x        x           x
+x  x  xxxx  x  xxxxxxx  x  x  xxxxxxxxxx  xxxx  xxxx  xxxxxxx
+x  x  x     x  x        x  x  x        x  x     x     x     x
+x  x  x  x  x  xxxxxxxxxx  x  x  xxxx  x  x  xxxx  xxxx  x  x
+x     x  x  x     x     x  x  x     x     x     x     x  x  x
+xxxxxxx  x  xxxx  x  x  xxxx  xxxxxxxxxx  xxxx  xxxx  x  x  x
+x        x  x        x           x        x     x        x  x
+x  xxxxxxx  x  xxxxxxxxxxxxx  x  x  xxxxxxx  xxxxxxxxxxxxxxxx
+x     x     x  x     x        x     x        x              x
+xxxx  x  x  x  x  x  x  xxxxxxxxxxxxx  xxxx  x  xxxxxxxxxx  x
+x  x  x  x     x  x  x        x     x     x  x        x     x
+x  x  x  xxxxxxxxxx  x  xxxxxxx  xxxxxxx  xxxxxxxxxx  x  xxxx
+x  x  x              x  x        x     x  x        x  x  x  x
+x  x  xxxxxxxxxx  xxxxxxx  x  xxxx  x  x  x  xxxx  xxxx  x  x
+x  x  x     x  x     x     x        x     x  x     x     x  x
+x  x  x  x  x  xxxx  x  xxxxxxxxxxxxxxxxxxxxxx  xxxx  xxxx  x
+x     x  x           x                                       
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
