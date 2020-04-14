@@ -1,19 +1,13 @@
-/*
- * Get maze from http://www.delorie.com/game-room/mazes/genmaze.cgi and save it to maze.txt
- * Change wall characters to 'x'. 
- * Change imageWidth and imageHeight constants to maze size.
- */
 #include <iostream>
 #include <fstream>
 #include <thread>
 #include <mutex>
-#include <math.h>
 #include <vector>
 #include <utility>
 #include <algorithm>
 
-const int imageWidth = 769;
-const int imageHeight = 401;
+const int imageWidth = 61;
+const int imageHeight = 41;
 
 int maze[imageHeight][imageWidth];
 std::mutex mazeMutex[imageHeight][imageWidth];
@@ -27,7 +21,7 @@ std::mutex threadCounterMutex;
 void loadMaze() {
   std::string line;
   std::ifstream mazeFile;
-  mazeFile.open("maze4.txt");
+  mazeFile.open("maze.txt");
   int rowIndex = 0;
   while(!mazeFile.eof() && rowIndex < imageHeight) {
     std::getline(mazeFile, line);
@@ -43,8 +37,7 @@ void loadMaze() {
 	mazeFile.close();
 }
 
-void generateImage() {
-  // Generate walls in image
+void preGenerateImage() {
   for (int i=0; i<imageHeight; i++) {
     for (int j=0; j<imageWidth; j++) {
       if (maze[i][j] == -1) {  
@@ -66,7 +59,7 @@ int getThreadIndex() {
   return threadCounter;
 }
 
-bool checkElement(int x, int y) {
+bool checkCorridor(int x, int y) {
   const std::lock_guard<std::mutex> lock(mazeMutex[x][y]);
   return maze[x][y] == 0;
 }
@@ -98,37 +91,34 @@ void mazeRun(int start_position_x, int start_position_y) {
       break;
     }
 
-    std::vector<std::pair<int, int>> availableWays;
-    if (x-1 >= 0) {
-      if (checkElement(x-1, y))
-        availableWays.push_back(std::make_pair<int, int>(x-1, y+0));
+    std::vector<std::pair<int, int>> availableMoves;
+    if (x-1 >= 0 && checkCorridor(x-1, y)) {
+        availableMoves.push_back(std::make_pair<int, int>(x-1, y+0));
     }
-    if (x+1 < imageHeight) {
-      if (checkElement(x+1, y))
-        availableWays.push_back(std::make_pair<int, int>(x+1, y+0));
+    if (x+1 < imageHeight && checkCorridor(x+1, y)) {
+        availableMoves.push_back(std::make_pair<int, int>(x+1, y+0));
     }
-    if (y-1 >= 0) {
-      if (checkElement(x, y-1))
-        availableWays.push_back(std::make_pair<int, int>(x+0, y-1));
+    if (y-1 >= 0 && checkCorridor(x, y-1)) {
+        availableMoves.push_back(std::make_pair<int, int>(x+0, y-1));
     }
-    if (y+1 < imageWidth) {
-      if (checkElement(x, y+1))
-        availableWays.push_back(std::make_pair<int, int>(x+0, y+1));
+    if (y+1 < imageWidth && checkCorridor(x, y+1)) {
+        availableMoves.push_back(std::make_pair<int, int>(x+0, y+1));
     }
 
-    if (availableWays.size() == 1) {
-      x = availableWays.at(0).first;
-      y = availableWays.at(0).second;
+    int availableMovesLength = availableMoves.size();
+    if (availableMovesLength == 1) {
+      x = availableMoves.at(0).first;
+      y = availableMoves.at(0).second;
     }
-    else if(availableWays.size() == 0) {
+    else if(availableMovesLength == 0) {
       canMove = false;
     }
     else {
-      x = availableWays.at(0).first;
-      y = availableWays.at(0).second;
-      for (int i=1; i<availableWays.size(); i++) {
-        int child_x = availableWays.at(i).first;
-        int child_y = availableWays.at(i).second;
+      x = availableMoves.at(0).first;
+      y = availableMoves.at(0).second;
+      for (int i=1; i<availableMovesLength; i++) {
+        int child_x = availableMoves.at(i).first;
+        int child_y = availableMoves.at(i).second;
         children.push_back(std::thread(mazeRun, child_x, child_y));
       }
     }
@@ -166,17 +156,15 @@ void generateColors() {
 int main() {
     loadMaze();
     generateColors();
-    generateImage();
+    preGenerateImage();
     FILE *fp;
     char *filename = "new1.ppm";
     char *comment = "# ";
     fp = fopen(filename, "wb");
     fprintf(fp, "P6\n %s\n %d\n %d\n %d\n", comment, imageWidth, imageHeight, 255);
 
-    // startowy element (1, 0)
     std::thread mazeRunner(mazeRun, 1, 0);
     mazeRunner.join();
-    std::cout << "Koniec :-) " << threadCounter << std::endl;
 
     fwrite(image, 1, 3 * imageHeight * imageWidth, fp);
     fclose(fp);
