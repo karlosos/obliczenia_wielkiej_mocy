@@ -22,29 +22,36 @@
 #include <iostream>
 #include <omp.h>
 
-/* screen ( integer) coordinate */
-const int iXmax = 800;
-const int iYmax = 800;
-/* world ( double) coordinate = parameter plane*/
-const double CxMin = -2.5;
-const double CxMax = 1.5;
-const double CyMin = -2.0;
-const double CyMax = 2.0;
-/* */
-double PixelWidth = (CxMax - CxMin) / iXmax;
-double PixelHeight = (CyMax - CyMin) / iYmax;
 
 const int IterationMax = 200;
 /* bail-out value , radius of circle ;  */
 const double EscapeRadius = 2;
 double ER2 = EscapeRadius * EscapeRadius;
-unsigned char color[iXmax][iYmax][3]; // output bitmap
 
 // colors declared for maximum count of 4 threads
 // add more if necessary
-unsigned char colorTheme[][3] = {{220, 230, 255}, {180, 190, 23}, {42, 129, 84}, {200, 10, 30}, {49, 23, 95}};
+unsigned char colorTheme[][3] = {{220, 230, 255}, {180, 190, 23}, {42, 129, 84}, {200, 10, 30}, {49, 23, 95}, {120, 90, 32}, {220, 220, 40}, {90, 255, 30}, {30, 30, 225}, {128, 190, 48}};
 
-void mainRunner(int threadsCount) {
+void mainRunner(int threadsCount, int imageSize) {
+  /* screen ( integer) coordinate */
+  int iXmax = imageSize;
+  int iYmax = imageSize;
+  /* world ( double) coordinate = parameter plane*/
+  double CxMin = -2.5;
+  double CxMax = 1.5;
+  double CyMin = -2.0;
+  double CyMax = 2.0;
+  /* */
+  double PixelWidth = (CxMax - CxMin) / iXmax;
+  double PixelHeight = (CyMax - CyMin) / iYmax;
+  unsigned char*** color = new unsigned char**[iXmax];
+  for (int i=0; i<iXmax; i++) {
+    color[i] = new unsigned char*[iYmax];
+    for (int j=0; j<iYmax; j++) {
+      color[i][j] = new unsigned char[3];
+    }
+  }
+
    /* color component ( R or G or B) is coded from 0 to 255 */
    /* it is 24 bit color RGB file */
    const int MaxColorComponentValue = 255;
@@ -79,8 +86,6 @@ void mainRunner(int threadsCount) {
      /* compute and write image data bytes to the file*/
      for (iY = 0; iY < iYmax; iY++) {
         Cy = CyMin + iY * PixelHeight;
-        if (fabs(Cy) < PixelHeight / 2)
-           Cy = 0.0; /* Main antenna */
         for (iX = 0; iX < iXmax; iX++) {
            iterationCount[threadNumber]++;
            Cx = CxMin + iX * PixelWidth;
@@ -127,12 +132,27 @@ void mainRunner(int threadsCount) {
       }
    }
    fclose(fp);
+
+   /*deallocation*/
+   for (int i=0; i<iXmax; i++) {
+    for (int j=0; j<iYmax; j++) {
+      delete[] color[i][j];
+    }
+    delete[] color[i];
+   }
+   delete[] color;
+
+   delete[] iterationCount;
+
 }
 
 int main() {
-   std::cout << "Image size " << iXmax << std::endl;
-   for (int i=1; i<5; i++) {
-      std::cout << "Threads: " << i << "\t \t ";
-      mainRunner(i);
-   } 
+   const int imageSizes[] = {800, 1600, 3200, 6400};
+   for (int j=3; j<4; j++) {
+     std::cout << "Image size " << imageSizes[j] << std::endl;
+     for (int i=8; i<9; i++) {
+        std::cout << "Threads: " << i << "\t \t ";
+        mainRunner(i, imageSizes[j]);
+     } 
+   }
 }
