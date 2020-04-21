@@ -65,10 +65,14 @@ void mainRunner(int threadsCount) {
    int Iteration;
    int threadNumber;
    // Koniec prywatnych zmiennych
+   int *iterationCount = new int[threadsCount];
+   for (int i=0; i<threadsCount; i++) {
+    iterationCount[i] = 0;
+   }
 
    auto start = omp_get_wtime();
 
-   #pragma omp parallel private(threadNumber) shared(color) num_threads(threadsCount)
+   #pragma omp parallel private(threadNumber) shared(color, iterationCount) num_threads(threadsCount)
    {
      threadNumber = omp_get_thread_num();
      #pragma omp for private(iX, iY, Cx, Cy, Zx, Zy, Zx2, Zy2, Iteration) 
@@ -78,6 +82,7 @@ void mainRunner(int threadsCount) {
         if (fabs(Cy) < PixelHeight / 2)
            Cy = 0.0; /* Main antenna */
         for (iX = 0; iX < iXmax; iX++) {
+           iterationCount[threadNumber]++;
            Cx = CxMin + iX * PixelWidth;
            /* initial value of orbit = critical point Z= 0 */
            Zx = 0.0;
@@ -108,6 +113,10 @@ void mainRunner(int threadsCount) {
    auto end = omp_get_wtime();
    auto elapsedTime = end - start; 
    std::cout << elapsedTime << std::endl;
+   std::cout << "Iterations count:" << std::endl;
+   for (int i=0; i<threadsCount; i++) {
+    std::cout << "Thread " << i << ": " << iterationCount[i] << std::endl;
+   }
 
    /*write color to the file*/
    for (int iY = 0; iY < iYmax; iY++)
