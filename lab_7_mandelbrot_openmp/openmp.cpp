@@ -82,7 +82,7 @@ void mainRunner(int threadsCount, int imageSize) {
    #pragma omp parallel private(threadNumber) shared(color, iterationCount) num_threads(threadsCount)
    {
      threadNumber = omp_get_thread_num();
-     #pragma omp for private(iX, iY, Cx, Cy, Zx, Zy, Zx2, Zy2, Iteration) 
+     #pragma omp for private(iX, iY, Cx, Cy, Zx, Zy, Zx2, Zy2, Iteration) schedule(runtime)
      /* compute and write image data bytes to the file*/
      for (iY = 0; iY < iYmax; iY++) {
         Cy = CyMin + iY * PixelHeight;
