@@ -1,0 +1,136 @@
+Image size 800
+Threads: 1
+0.0806157
+Iterations count:
+14118439, 
+Threads: 2
+0.0488023
+Iterations count:
+7014056, 7104383, 
+Threads: 3
+0.0492198
+Iterations count:
+7014056, 0, 7104383, 
+Threads: 4
+0.0492438
+Iterations count:
+7014056, 0, 0, 7104383, 
+Threads: 5
+0.07603
+Iterations count:
+0, 0, 7104383, 0, 7014056, 
+Threads: 6
+0.083808
+Iterations count:
+0, 0, 7014056, 0, 0, 7104383, 
+Threads: 7
+0.0788815
+Iterations count:
+0, 0, 0, 0, 7014056, 0, 7104383, 
+Threads: 8
+0.0790203
+Iterations count:
+0, 7104383, 0, 0, 7014056, 0, 0, 0, 
+
+Image size 1600
+Threads: 1
+0.337448
+Iterations count:
+56443291, 
+Threads: 2
+0.209056
+Iterations count:
+28131300, 28311991, 
+Threads: 3
+0.254018
+Iterations count:
+3590116, 11502039, 41351136, 
+Threads: 4
+0.206535
+Iterations count:
+1139083, 1142494, 27169497, 26992217, 
+Threads: 5
+0.193961
+Iterations count:
+0, 27169497, 1142494, 26992217, 1139083, 
+Threads: 6
+0.165428
+Iterations count:
+0, 1139083, 27169497, 1142494, 0, 26992217, 
+Threads: 7
+0.19671
+Iterations count:
+0, 1142494, 0, 27169497, 1139083, 0, 26992217, 
+Threads: 8
+0.19661
+Iterations count:
+0, 27169497, 0, 1142494, 26992217, 1139083, 0, 0, 
+
+Image size 3200
+Threads: 1
+1.36517
+Iterations count:
+225715992, 
+Threads: 2
+0.880082
+Iterations count:
+112677275, 113038717, 
+Threads: 3
+0.98866
+Iterations count:
+18599456, 59790256, 147326280, 
+Threads: 4
+0.859061
+Iterations count:
+11468850, 112508550, 44947852, 56790740, 
+Threads: 5
+0.82335
+Iterations count:
+27489718, 91120906, 16569476, 82470865, 8065027, 
+Threads: 6
+0.88959
+Iterations count:
+6788858, 49036679, 7651833, 102232909, 3540804, 56464909, 
+Threads: 7
+0.831716
+Iterations count:
+4028427, 30371981, 2171129, 78608359, 2972190, 14403067, 93160839, 
+Threads: 8
+0.789931
+Iterations count:
+22218520, 1861266, 86035125, 2705734, 86253197, 1859149, 22081772, 2701229, 
+
+Image size 6400
+Threads: 1
+6.53752
+Iterations count:
+902682449, 
+Threads: 2
+4.60063
+Iterations count:
+451702703, 450979746, 
+Threads: 3
+4.89133
+Iterations count:
+74390151, 238969897, 589322401, 
+Threads: 4
+3.89236
+Iterations count:
+49437079, 176049257, 449825999, 227370114, 
+Threads: 5
+3.71569
+Iterations count:
+133931327, 330016085, 316223527, 45730282, 76781228, 
+Threads: 6
+3.80624
+Iterations count:
+116503357, 308493070, 227913643, 173655920, 42910323, 33206136, 
+Threads: 7
+3.81301
+Iterations count:
+173582501, 263745001, 78027164, 102936895, 39161236, 217881139, 27348513, 
+Threads: 8
+3.39856
+Iterations count:
+90025631, 19274087, 33823222, 142334546, 217781270, 217907076, 30411389, 151125228, 
+

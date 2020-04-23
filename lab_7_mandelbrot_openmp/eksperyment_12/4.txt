@@ -1,0 +1,136 @@
+Image size 800
+Threads: 1
+0.0803812
+Iterations count:
+14118439, 
+Threads: 2
+0.0790817
+Iterations count:
+14118439, 0, 
+Threads: 3
+0.0790155
+Iterations count:
+14118439, 0, 0, 
+Threads: 4
+0.0789724
+Iterations count:
+14118439, 0, 0, 0, 
+Threads: 5
+0.0791177
+Iterations count:
+14118439, 0, 0, 0, 0, 
+Threads: 6
+0.079059
+Iterations count:
+14118439, 0, 0, 0, 0, 0, 
+Threads: 7
+0.079079
+Iterations count:
+14118439, 0, 0, 0, 0, 0, 0, 
+Threads: 8
+0.0791126
+Iterations count:
+14118439, 0, 0, 0, 0, 0, 0, 0, 
+
+Image size 1600
+Threads: 1
+0.33374
+Iterations count:
+56443291, 
+Threads: 2
+0.279173
+Iterations count:
+49730584, 6712707, 
+Threads: 3
+0.268283
+Iterations count:
+49730584, 6712707, 0, 
+Threads: 4
+0.268381
+Iterations count:
+49730584, 6712707, 0, 0, 
+Threads: 5
+0.267867
+Iterations count:
+49730584, 6712707, 0, 0, 0, 
+Threads: 6
+0.268028
+Iterations count:
+49730584, 6712707, 0, 0, 0, 0, 
+Threads: 7
+0.267938
+Iterations count:
+49730584, 6712707, 0, 0, 0, 0, 0, 
+Threads: 8
+0.267977
+Iterations count:
+49730584, 6712707, 0, 0, 0, 0, 0, 0, 
+
+Image size 3200
+Threads: 1
+1.36694
+Iterations count:
+225715992, 
+Threads: 2
+1.07142
+Iterations count:
+34895475, 190820517, 
+Threads: 3
+1.09581
+Iterations count:
+9810031, 189970479, 25935482, 
+Threads: 4
+1.06131
+Iterations count:
+8959993, 189970479, 25935482, 850038, 
+Threads: 5
+1.06097
+Iterations count:
+8959993, 189970479, 25935482, 850038, 0, 
+Threads: 6
+1.08324
+Iterations count:
+8959993, 189970479, 25935482, 850038, 0, 0, 
+Threads: 7
+1.08367
+Iterations count:
+8959993, 189970479, 25935482, 850038, 0, 0, 0, 
+Threads: 8
+1.09623
+Iterations count:
+8959993, 189970479, 25935482, 850038, 0, 0, 0, 0, 
+
+Image size 6400
+Threads: 1
+7.21072
+Iterations count:
+902682449, 
+Threads: 2
+4.68506
+Iterations count:
+412817436, 489865013, 
+Threads: 3
+4.3563
+Iterations count:
+465254502, 118517976, 318909971, 
+Threads: 4
+4.09037
+Iterations count:
+101852090, 37617090, 310965346, 452247923, 
+Threads: 5
+4.04429
+Iterations count:
+20951204, 29672465, 307566680, 452247923, 92244177, 
+Threads: 6
+4.04974
+Iterations count:
+13006579, 26273799, 307566680, 452247923, 92244177, 11343291, 
+Threads: 7
+4.25362
+Iterations count:
+9607913, 26273799, 307566680, 452247923, 92244177, 11343291, 3398666, 
+Threads: 8
+4.21992
+Iterations count:
+9607913, 26273799, 307566680, 452247923, 92244177, 11343291, 3398666, 0, 
+
