@@ -26,11 +26,22 @@ int isprime(int n)
     return n > 2;
 }
 
-void drawSpiral(std::pair<int, int> x_bounds, std::pair<int, int> y_bounds, int color)
+int main()
 {
-    for (int i = x_bounds.first; i < x_bounds.second; i++)
+    omp_set_num_threads(8);
+    FILE *fp;
+    char *filename = "new1.ppm";
+    char *comment = "# ";
+    fp = fopen(filename, "wb");
+    fprintf(fp, "P6\n %s\n %d\n %d\n %d\n", comment, imageWidth, imageWidth, 255);
+
+    // https://www.openmp.org/spec-html/5.0/openmpsu41.html#x64-1290002.9.2
+    // Za dokumentacją openmp:
+    // The collapse clause may be used to specify how many loops are associated with the worksharing-loop construct. The parameter of the collapse clause must be a constant positive integer expression. If a collapse clause is specified with a parameter value greater than 1, then the iterations of the associated loops to which the clause applies are collapsed into one larger iteration space that is then divided according to the schedule clause. The sequential execution of the iterations in these associated loops determines the order of the iterations in the collapsed iteration space. If no collapse clause is present or its parameter is 1, the only loop that is associated with the worksharing-loop construct for the purposes of determining how the iteration space is divided according to the schedule clause is the one that immediately follows the worksharing-loop directive.  
+    #pragma omp parallel for collapse(2) schedule(dynamic) 
+    for (int i = 0; i < imageWidth; i++)
     {
-        for (int j = y_bounds.first; j < y_bounds.second; j++)
+        for (int j = 0; j < imageWidth; j++)
         {
             bool isCelPrime = isprime(ulam_get_map(i, j, imageWidth));
             if (isCelPrime)
@@ -41,39 +52,12 @@ void drawSpiral(std::pair<int, int> x_bounds, std::pair<int, int> y_bounds, int 
             }
             else
             {
-                image[i][j][0] = color;
-                image[i][j][1] = color;
-                image[i][j][2] = color;
+                image[i][j][0] = 0;
+                image[i][j][1] = 0;
+                image[i][j][2] = 0;
             }
         }
     }
-}
-
-int main()
-{
-    omp_set_num_threads(4);
-    FILE *fp;
-    char *filename = "new1.ppm";
-    char *comment = "# ";
-    fp = fopen(filename, "wb");
-    fprintf(fp, "P6\n %s\n %d\n %d\n %d\n", comment, imageWidth, imageWidth, 255);
-
-    auto upper_bound = std::make_pair(0, imageWidth / 2);
-    auto lower_bound = std::make_pair(imageWidth / 2, imageWidth);
-    auto left_bound = std::make_pair(0, imageWidth / 2);
-    auto right_bound = std::make_pair(imageWidth / 2, imageWidth);
-
-    #pragma omp task
-    drawSpiral(upper_bound, left_bound, 0);
-    #pragma omp task
-    drawSpiral(upper_bound, right_bound, 0);
-    #pragma omp task
-    drawSpiral(lower_bound, left_bound, 0);
-    #pragma omp task
-    drawSpiral(lower_bound, right_bound, 0);
-    #pragma omp taskwait
 
     fwrite(image, 1, 3 * imageWidth * imageWidth, fp);
-    fclose(fp);
-    return 0;
-}
+    fclose(fp); return 0; }

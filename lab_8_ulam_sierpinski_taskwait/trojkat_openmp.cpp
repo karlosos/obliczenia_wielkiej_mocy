@@ -8,12 +8,13 @@
 #include <omp.h>
 
 const int triangleHeight = 1024;
-const int levelLimit = 7;
+const int levelLimit = 3;
 
 unsigned char image[triangleHeight][triangleHeight][3];
 
 void draw_triangle(int x, int y, int level)
 {
+    std::cout << "I'm in " << omp_get_thread_num() << std::endl; // aby upewnić się że jest równoległe
     int length = triangleHeight / pow(2, level);
     for (int i = y; i < y + length; i++)
     {
@@ -49,7 +50,11 @@ int main()
     fp = fopen(filename, "wb");
     fprintf(fp, "P6\n %s\n %d\n %d\n %d\n", comment, triangleHeight, triangleHeight, 255);
 
-    draw_triangle(0, 0, 0);
+    #pragma omp parallel
+    {
+      #pragma omp single    
+      draw_triangle(0, 0, 0);
+    }
 
     fwrite(image, 1, 3 * triangleHeight * triangleHeight, fp);
     fclose(fp);
