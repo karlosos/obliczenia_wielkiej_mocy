@@ -1,0 +1,21 @@
+
+    // PIERWSZY FEEDBACK:
+    // spirala ulama powinna byc na zagniezdzonym parallel for bez taskow
+    //
+    // ---
+    // Tutaj był błąd w treści zadania i po wysłaniu zadania poprawił Pan treść.
+    // Ja poprawiłem kod tak aby spirala ulama działała na parallel for nested(2) zamiast na taskach.
+    //
+    // DRUGI FEEDBACK:
+    // schedule(dynamic) jest zbędne, a co z ćwiartkami na które dzieliliśmy ulama
+    //
+    // ---
+    // Usunąłem schedule(dynamic).
+    // Zastosowałem zagnieżdżone pętle for do wywoływania funkcji, która oblicza spiralę ulama dla danego przedziału.
+    // Było to zagnieżdżone parallel for i z wątkami.
+    //
+    // TRZECI FEEDBACK:
+    // schedule(dynamic) jest zbędne, a co z ćwiarkami na które dzieliliśmy ulama
+    //
+    // ---
+    // Tutaj była pomyłka w feedbacku.
