@@ -1,3 +1,5 @@
+// Karol Dzialowski 39259
+
 #include <iostream>
 #include <tbb/tbb.h>
 #include <stdio.h>
@@ -5,30 +7,30 @@
 
 using namespace std;
 
-unsigned char*** image;
-unsigned char*** filteredImage;
+unsigned char*** color;
+unsigned char*** filteredColor;
 int height;
 int width;
 
-double average[9] = {
-  1.0, 1.0, 1.0,
-  1.0, 1.0, 1.0,
-  1.0, 1.0, 1.0,
+int average[9] = {
+  1, 1, 1,
+  1, 1, 1,
+  1, 1, 1,
 };
 
-double blur[25] = {
-  0.0, 1.0, 2.0, 1.0, 0.0,
-  1.0, 4.0, 8.0, 4.0, 1.0,
-  2.0, 8.0, 16.0, 8.0, 2.0,
-  1.0, 4.0, 8.0, 4.0, 1.0,
-  0.0, 1.0, 2.0, 1.0, 0.0,
+int sobel[9] = {
+  1, 2, 1,
+  0, 0, 0,
+  -1, -2, -1,
 };
 
-double sharpen [9] = {
-  -1.0, -1.0, -1.0,
-  -1.0, 9.0, -1.0,
-  -1.0, -1.0, -1.0
+int sharpen [9] = {
+  -1, -1, -1,
+  -1, 9, -1,
+  -1, -1, -1
 };
+
+
 
 void load_image() {
   FILE *fp;
@@ -50,11 +52,11 @@ void load_image() {
   cout << width << ", " << height << endl;
 
   /*allocation*/
-  image = new unsigned char**[width];
+  color = new unsigned char**[width];
   for (int i=0; i<width; i++) {
-    image[i] = new unsigned char*[height];
+    color[i] = new unsigned char*[height];
     for (int j=0; j<height; j++) {
-      image[i][j] = new unsigned char[3];
+      color[i][j] = new unsigned char[3];
     }
   }
 
@@ -63,7 +65,7 @@ void load_image() {
   {
     for (int j = 0; j < width; j++)
     {
-      fread(image[i][j], 1, 3, fp);
+      fread(color[i][j], 1, 3, fp);
     }
   }
 
@@ -71,16 +73,16 @@ void load_image() {
   fclose(fp);
 }
 
-void filter(double* mask, int maskWidth, int maskSum) {
+void filter(int* mask, int maskWidth, int maskSum) {
   // Alokacja kopii obrazu.
   // To bedzie orbaz wynikowy po filtracji.
-  filteredImage = new unsigned char**[width];
+  filteredColor = new unsigned char**[width];
   for (int i=0; i<width; i++) {
-    filteredImage[i] = new unsigned char*[height];
+    filteredColor[i] = new unsigned char*[height];
     for (int j=0; j<height; j++) {
-      filteredImage[i][j] = new unsigned char[3];
+      filteredColor[i][j] = new unsigned char[3];
       for (int k=0; k<3; k++) {
-        filteredImage[i][j][k] = image[i][j][k];
+        filteredColor[i][j][k] = color[i][j][k];
       }
     }
   }
@@ -90,37 +92,38 @@ void filter(double* mask, int maskWidth, int maskSum) {
   int offset = maskWidth/2;
 
   // Pętla po obrazie
-  for (int i=0; i<width; i++) {
-    for (int j=0; j<height; j++) { 
+  // Wykorzystano parallel_for jak w ksiazce ProTBB str. 45
+  // for (int i=0; i<width; i++) {
+  tbb::parallel_for(0, width, [=](int i) {
+      for (int j=0; j<height; j++) { 
+        // Akumulatory dla każdego kanału (RGB)
+        int sum_0 = 0;
+        int sum_1 = 0;
+        int sum_2 = 0;
 
-      // Akumulatory dla każdego kanału (RGB)
-      int sum_0 = 0;
-      int sum_1 = 0;
-      int sum_2 = 0;
+        // Pętla po masce
+        for (int mask_i = 0; mask_i < maskWidth; mask_i++) {
+          for (int mask_j = 0; mask_j < maskWidth; mask_j++) {
+            // Wyznaczenie indeksu obrazu pod daną pozycją w masce
+            int image_i = i + mask_i - offset;
+            int image_j = j + mask_j - offset;   
 
-      // Pętla po masce
-      for (int mask_i = 0; mask_i < maskWidth; mask_i++) {
-        for (int mask_j = 0; mask_j < maskWidth; mask_j++) {
-          // Wyznaczenie indeksu obrazu pod daną pozycją w masce
-          int image_i = i + mask_i - offset;
-          int image_j = j + mask_j - offset;   
-
-          // Jeżeli maska wystaje poza obraz to uwzględnij te pozycje tak jakby były
-          // czarnymi pikselami.
-          if (image_i < 0 || image_j < 0 || image_i >= width || image_j >= height) {
-            sum_0 += 0;
-            sum_1 += 0;
-            sum_2 += 0; 
+            // Jeżeli maska wystaje poza obraz to uwzględnij te pozycje tak jakby były
+            // czarnymi pikselami.
+            if (image_i < 0 || image_j < 0 || image_i >= width || image_j >= height) {
+              sum_0 += 0;
+              sum_1 += 0;
+              sum_2 += 0; 
+            } 
+            // Sumowanie wartości pod danym indeksem maski 
+            else {
+              // Mnożnik, czyli wartość z maski
+              int multiplier = mask[mask_i * maskWidth + mask_j]; 
+              sum_0 += multiplier * color[image_i][image_j][0]; 
+              sum_1 += multiplier * color[image_i][image_j][1]; 
+              sum_2 += multiplier * color[image_i][image_j][2]; 
+            } 
           } 
-          // Sumowanie wartości pod danym indeksem maski 
-          else {
-            // Mnożnik, czyli wartość z maski
-            int multiplier = mask[mask_i * maskWidth + mask_j]; 
-            sum_0 += multiplier * image[image_i][image_j][0]; 
-            sum_1 += multiplier * image[image_i][image_j][1]; 
-            sum_2 += multiplier * image[image_i][image_j][2]; 
-          } 
-        } 
       }
 
       // Przycinanie wartosci do przedzialu 0,255
@@ -136,11 +139,11 @@ void filter(double* mask, int maskWidth, int maskSum) {
       output_2 = std::max(output_2, 0);
 
       // Ustawianie finalnego piksela po filtracji
-      filteredImage[i][j][0] = output_0;
-      filteredImage[i][j][1] = output_1;
-      filteredImage[i][j][2] = output_2;
-    }
-  } 
+      filteredColor[i][j][0] = output_0;
+      filteredColor[i][j][1] = output_1;
+      filteredColor[i][j][2] = output_2;
+      }
+  }); 
 }
 
 void save_to_file() {
@@ -151,12 +154,12 @@ void save_to_file() {
   fp = fopen(filename, "wb");
   fprintf(fp, "P6\n %s\n %d\n %d\n %d\n", comment, width, height, MaxColorComponentValue);
 
-  /*write image to the file*/
+  /*write color to the file*/
   for (int i = 0; i < height; i++)
   {
     for (int j = 0; j < width; j++)
     {
-      fwrite(filteredImage[i][j], 1, 3, fp);
+      fwrite(filteredColor[i][j], 1, 3, fp);
     }
   }
   fclose(fp);
@@ -164,20 +167,27 @@ void save_to_file() {
   /*deallocation*/
   for (int i=0; i<width; i++) {
     for (int j=0; j<height; j++) {
-      delete[] image[i][j];
-      delete[] filteredImage[i][j];
+      delete[] color[i][j];
+      delete[] filteredColor[i][j];
     }
-    delete[] image[i];
-    delete[] filteredImage[i];
+    delete[] color[i];
+    delete[] filteredColor[i];
   }
-  delete[] image;
-  delete[] filteredImage;
+  delete[] color;
+  delete[] filteredColor;
 }
 
 int main() {
   load_image();
-  filter(sharpen, 3, 1);
+  tbb::tick_count time_start, time_end;
+  time_start = tbb::tick_count::now();
+
+  //filter(sharpen, 3, 1);
   //filter(average, 3, 9);
+  filter(sobel, 3, 1);
+
+  time_end = tbb::tick_count::now();
+  cout << "Time: " << (time_end - time_start).seconds() << endl;
   save_to_file();
   return 0;
 }
