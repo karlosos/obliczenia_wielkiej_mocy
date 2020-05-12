@@ -1,13 +1,12 @@
 #include <iostream>
 #include <tbb/tbb.h>
-#include <fstream>
-#include <sstream>
 #include <stdio.h>
+#include <algorithm>
 
 using namespace std;
 
-unsigned char*** color;
-unsigned char*** colorCopy;
+unsigned char*** image;
+unsigned char*** filteredImage;
 int height;
 int width;
 
@@ -51,11 +50,11 @@ void load_image() {
   cout << width << ", " << height << endl;
 
   /*allocation*/
-  color = new unsigned char**[width];
+  image = new unsigned char**[width];
   for (int i=0; i<width; i++) {
-    color[i] = new unsigned char*[height];
+    image[i] = new unsigned char*[height];
     for (int j=0; j<height; j++) {
-      color[i][j] = new unsigned char[3];
+      image[i][j] = new unsigned char[3];
     }
   }
 
@@ -64,7 +63,7 @@ void load_image() {
   {
     for (int j = 0; j < width; j++)
     {
-      fread(color[i][j], 1, 3, fp);
+      fread(image[i][j], 1, 3, fp);
     }
   }
 
@@ -73,73 +72,78 @@ void load_image() {
 }
 
 void filter(double* mask, int maskWidth, int maskSum) {
-  colorCopy = new unsigned char**[width];
+  // Alokacja kopii obrazu.
+  // To bedzie orbaz wynikowy po filtracji.
+  filteredImage = new unsigned char**[width];
   for (int i=0; i<width; i++) {
-    colorCopy[i] = new unsigned char*[height];
+    filteredImage[i] = new unsigned char*[height];
     for (int j=0; j<height; j++) {
-      colorCopy[i][j] = new unsigned char[3];
+      filteredImage[i][j] = new unsigned char[3];
       for (int k=0; k<3; k++) {
-        colorCopy[i][j][k] = color[i][j][k];
+        filteredImage[i][j][k] = image[i][j][k];
       }
     }
   }
 
+  // Offset. Jeżeli maska będzie o rozmiarze 3x3 to początek maski będzie oddalony o 1 jednostkę. 
+  // Jeżeli maska będzie o rozmiarze 5x5 to początek maski będzie oddalony o 2 jednostki. 
   int offset = maskWidth/2;
 
+  // Pętla po obrazie
   for (int i=0; i<width; i++) {
     for (int j=0; j<height; j++) { 
+
+      // Akumulatory dla każdego kanału (RGB)
       int sum_0 = 0;
       int sum_1 = 0;
       int sum_2 = 0;
 
+      // Pętla po masce
       for (int mask_i = 0; mask_i < maskWidth; mask_i++) {
         for (int mask_j = 0; mask_j < maskWidth; mask_j++) {
+          // Wyznaczenie indeksu obrazu pod daną pozycją w masce
           int image_i = i + mask_i - offset;
           int image_j = j + mask_j - offset;   
+
+          // Jeżeli maska wystaje poza obraz to uwzględnij te pozycje tak jakby były
+          // czarnymi pikselami.
           if (image_i < 0 || image_j < 0 || image_i >= width || image_j >= height) {
             sum_0 += 0;
             sum_1 += 0;
             sum_2 += 0; 
-          } else {
+          } 
+          // Sumowanie wartości pod danym indeksem maski 
+          else {
+            // Mnożnik, czyli wartość z maski
             int multiplier = mask[mask_i * maskWidth + mask_j]; 
-            //multiplier = 1;
-            sum_0 += multiplier * color[image_i][image_j][0]; 
-            sum_1 += multiplier * color[image_i][image_j][1]; 
-            sum_2 += multiplier * color[image_i][image_j][2]; 
+            sum_0 += multiplier * image[image_i][image_j][0]; 
+            sum_1 += multiplier * image[image_i][image_j][1]; 
+            sum_2 += multiplier * image[image_i][image_j][2]; 
           } 
         } 
       }
 
+      // Przycinanie wartosci do przedzialu 0,255
       int output_0 = sum_0/maskSum;
       int output_1 = sum_1/maskSum;
       int output_2 = sum_2/maskSum;
 
-      if (output_0 < 0) {
-        output_0 = 0;
-      } else if (output_0 > 255) {
-        output_0 = 255;      
-      }
+      output_0 = std::min(output_0, 255);
+      output_0 = std::max(output_0, 0);
+      output_1 = std::min(output_1, 255);
+      output_1 = std::max(output_1, 0);
+      output_2 = std::min(output_2, 255);
+      output_2 = std::max(output_2, 0);
 
-      if (output_1 < 0) {
-        output_1 = 0;
-      } else if (output_1 > 255) {
-        output_1 = 255;      
-      }
-
-      if (output_2 < 0) {
-        output_2 = 0;
-      } else if (output_2 > 255) {
-        output_2 = 255;      
-      }
-
-      colorCopy[i][j][0] = output_0;
-      colorCopy[i][j][1] = output_1;
-      colorCopy[i][j][2] = output_2;
+      // Ustawianie finalnego piksela po filtracji
+      filteredImage[i][j][0] = output_0;
+      filteredImage[i][j][1] = output_1;
+      filteredImage[i][j][2] = output_2;
     }
   } 
 }
 
-void save_to_file(unsigned char*** image) {
+void save_to_file() {
   const int MaxColorComponentValue = 255;
   FILE *fp;
   const char *filename = "output.ppm";
@@ -147,12 +151,12 @@ void save_to_file(unsigned char*** image) {
   fp = fopen(filename, "wb");
   fprintf(fp, "P6\n %s\n %d\n %d\n %d\n", comment, width, height, MaxColorComponentValue);
 
-  /*write color to the file*/
+  /*write image to the file*/
   for (int i = 0; i < height; i++)
   {
     for (int j = 0; j < width; j++)
     {
-      fwrite(image[i][j], 1, 3, fp);
+      fwrite(filteredImage[i][j], 1, 3, fp);
     }
   }
   fclose(fp);
@@ -160,20 +164,21 @@ void save_to_file(unsigned char*** image) {
   /*deallocation*/
   for (int i=0; i<width; i++) {
     for (int j=0; j<height; j++) {
-      delete[] color[i][j];
-      delete[] colorCopy[i][j];
+      delete[] image[i][j];
+      delete[] filteredImage[i][j];
     }
-    delete[] color[i];
-    delete[] colorCopy[i];
+    delete[] image[i];
+    delete[] filteredImage[i];
   }
-  delete[] color;
-  delete[] colorCopy;
+  delete[] image;
+  delete[] filteredImage;
 }
-
 
 int main() {
   load_image();
   filter(sharpen, 3, 1);
-  save_to_file(colorCopy);
+  //filter(average, 3, 9);
+  save_to_file();
   return 0;
 }
+
