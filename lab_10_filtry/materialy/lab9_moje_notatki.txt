@@ -1,0 +1,61 @@
+Instructions
+Intel TBB, filtry graficzne
+
+ 
+
+Wybieramy obraz, zdjęcie. Zapisujemy do PPM.
+
+Wczytujemy do tablicy color ten plik (to nowość, trzeba wczytać najpierw nagłówek, tablice alokujemy tak dużą jaka rozdzielczość obrazka).
+
+
+Przepuszczamy filtr przez obrazek.
+
+http://www.algorytm.org/przetwarzanie-obrazow/filtrowanie-obrazow.html
+
+Wybieramy maskę filtru. I dla każdego piksela sumujemy iloczyn wag i sąsiadów, ewentualnie dzieląc przez stałą.
+
+ 
+
+Filtry obliczamy dla każdego kanału RGB osobno!
+
+ 
+
+Efekt zapisujemy na dysk w PPM. Wybrać filtry i obraz tak by przekszałcenie było widoczne.
+
+ 
+
+Czytamy o parallelfor, zrównoleglamy w TBB, używamy lambdy. Mierzymy czasy, można zrobić to tak jak w C++ 11, można użyć tick_count z przestrzeni tbb.
+
+Na zajęciach lab omówimy zadanie. Na wykładzie omówimy wstęp do TBB i jak działa parallel_for.
+
+
+## Devnotes
+
+- wczytanie ppm analogicznie jak zapis 
+- fread w forach będzie git - sprawdzić czy odpis i zapis będzie gituwa
+- każdy filtr pod inny kanał
+- dobrać dobry obrazek co filtry będą dobre
+- czarna ramka na około z czarnymi pikselami
+- parallel for algorytm generyczny - lambda można
+- mierzenie czasu z c++11 threads albo z pakietu tbb `tick count`
+
+parallel for - jak jest globalna tablica to nie musimy jej przekazywać. Ciało pętli w labmdach. 
+
+Obserwujemy czy się liczy szybciej na iluś procesorach. Na wyjściu obrazki po filtrach. 
+Zaznajomić się z napisem parallel for (str. 45, 44). 
+Wielkość kroku domyślnie 1. Przekazujemy zmienne przez wartość. 
+Nie trzeba linearyzować tablicy. Zmienna i potrzebna i tak. 
+
+tick_count
+
+str 141. t0 = tbb:tick_count::now(), t1 = tbb::tick_count::now()
+
+main tbb
+str 12 
+
+```
+sudo apt install libtbb-dev
+```
+
+-ltbb
+
