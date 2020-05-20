@@ -1,0 +1,15 @@
+Mierzymy czasy, przyspieszenie zrównoleglonej aplikacji fraktal Lapunowa za pomocą parallelfor i blocked_range dla obu pętli (w pionie i poziomie). Zmieniamy wielkość ziarna (dla chętnych też liczba wątków). Zdajemy kod programu oraz powtarzamy testy dla różnych wielkości obrazka. Czy wątki mają tyle samo obliczeń? Krótkie sprawozdanie do 2 stron. Źrodła fratkala Lapunowa w załaczniku.
+
+ 
+
+Uwaga. Zamiast zagnieżdżonych parallelfor możecie użyć blockedrange2d
+
+ 
+
+    for( size_t i=r.rows().begin(); i!=r.rows().end(); ++i )     
+
+        for( size_t j=r.cols().begin(); j!=r.cols().end(); ++j )
+
+ 
+
+parallel_for( blocked_range2d<size_t>(0, M, 16, 0, N, 32),    16 i 32 to gs w wierszach i kolumnach - 6 argumentów, jest też przeciązona wersja bez podawania gs z 4 argumentami (0,M,0,N)
