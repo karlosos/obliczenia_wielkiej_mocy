@@ -42,7 +42,10 @@ void saveBoard(int iteration) {
 unsigned char colorTheme[][3] = {{0, 0, 0}, {220, 30, 15}, {30, 220, 15}};
   FILE * fp;
   int i,j;
-  std::string fileName = "frame_" + std::to_string(iteration) + ".ppm";
+  std::string fileName = "frames/frame_" + std::to_string(iteration) + ".ppm";
+  if (iteration < 10) {
+  fileName = "frames/frame_0" + std::to_string(iteration) + ".ppm";
+  }
   const char *filename = fileName.c_str(); 
   char *comment="# ";/* comment should start with # */
   const int MaxColorComponentValue=255;
@@ -117,11 +120,11 @@ int main() {
   // Inicjalizacja planszy
   initializeBoard();
 
-  for (int i=0; i<100; i++) {
+  for (int i=0; i<99; i++) {
     // Reguly iteracja
     iteration();
     // Zapisywanie currentBoard do obrazka
-    saveBoard(i);
+    saveBoard(i+1);
     // Czyszczenie tablic
     flipBoard();
   }
