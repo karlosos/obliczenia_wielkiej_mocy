@@ -1,11 +1,14 @@
 #include <iostream>
 #include <random>
+#include "tbb/parallel_invoke.h"
+#include <tbb/mutex.h>
 
 using namespace std;
 
 const int size = 100;
 int currentBoard[size][size];
 int nextBoard[size][size];
+tbb::mutex boardMutex[size][size]; // chroni dostep do nextBoard
 
 void initializeBoard() {
   srand((unsigned)time(NULL));
@@ -17,14 +20,6 @@ void initializeBoard() {
         cell = (rand() % 2) + 1;
       }
       currentBoard[i][j] = cell; 
-    }
-  }
-}
-
-void clearBoard() {
-  for (int i=0; i<size; i++) {
-    for (int j=0; j<size; j++) {
-      nextBoard[i][j]=0;
     }
   }
 }
@@ -71,9 +66,10 @@ unsigned char colorTheme[][3] = {{0, 0, 0}, {220, 30, 15}, {30, 220, 15}};
   fclose(fp);
 }
 
-void iteration() {
+void iteration(int colony) {
   for (int i=0; i<size; i++) {
     for (int j=0; j<size; j++) {
+      int cell = currentBoard[i][j];
       // Liczenie zywych sąsiadów
       int colony1Neighbours = 0;
       int colony2Neighbours = 0;
@@ -92,7 +88,8 @@ void iteration() {
         } 
       }
 
-      int cell = currentBoard[i][j];
+      // Wyznaczanie nowej wartosci komorki
+      // int cell = currentBoard[i][j];
       int newCell = 0;
       int livingNeighbours = colony1Neighbours + colony2Neighbours;
       
@@ -106,12 +103,20 @@ void iteration() {
         }
       } 
 
-      // JEzeli jest zywa i ma 2 lub 3 sasiadow to pozostaje zywa
+      // Jezeli jest zywa i ma 2 lub 3 sasiadow to pozostaje zywa
       if (cell != 0 and (livingNeighbours == 2 or livingNeighbours == 3)) {
         newCell = cell; 
       }
 
-      nextBoard[i][j] = newCell;
+      // Wpisywanie nowej komorki
+      // Zakladam mutex i sprawdzam czy pole nie jest już zajęte
+      if (newCell == colony) {
+        boardMutex[i][j].lock(); 
+        if (nextBoard[i][j] == 0) {
+          nextBoard[i][j] = newCell;
+        }
+        boardMutex[i][j].unlock(); 
+      }
     }
   }
 }
@@ -122,7 +127,7 @@ int main() {
 
   for (int i=0; i<99; i++) {
     // Reguly iteracja
-    iteration();
+    tbb::parallel_invoke([]{iteration(1);}, []{iteration(2);} );
     // Zapisywanie currentBoard do obrazka
     saveBoard(i+1);
     // Czyszczenie tablic
