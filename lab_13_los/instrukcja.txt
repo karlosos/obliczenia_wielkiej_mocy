@@ -1,0 +1,7 @@
+Promień świata i parallel scan. Przykład omawiany na poprzednim przykładzie. Dla 2 wątków.
+Przykład wygenerowania słupków w PPM w kodzie załączonym.
+Źródło światła w prawym górnym ekranu.
+Wykonujemy pre-scan i final-scan zaczynając od paczek z prawej strony (ich wielkość dowolna).
+Program wypisuje konsoli etapy: wątek nr 1 lub 2, paczka, maksimu, pre-scan lub final, 
+Słupki ich górne piksele malujemy (lub je całe) na czerwono gdy nieoświtlone tg mniejszy, zasłonięte, na zielono w przeciwnym razie. Obejrzyj przykład w podręczniku. Kolorujemy słupki, nie rysujemy prostych do źródła światlła.
+Zapisujemy w ppm i wraz z kodem zdajemy program.
